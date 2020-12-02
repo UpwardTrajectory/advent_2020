@@ -18,7 +18,7 @@ def parse_and_test_input(raw_pw_str, sep=",", test_func=test_record_min_max):
         
         parsed_rules = []
         
-        for i, rule in enumerate(rules.split(sep)):
+        for rule in rules.split(sep):
             one_rule = {}
             nums, char = rule.split(" ")
             low, high = nums.split("-")
