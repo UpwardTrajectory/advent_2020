@@ -31,30 +31,38 @@ def validate_one(pp):
     cid (Country ID) - ignored, missing or not.
     """
     try:
-        byr = float(pp['byr'])
-        iyr = float(pp['iyr'])
-        eyr = float(pp['eyr'])
+        # TO-DO: convert to dictionary unpacking from the inputs
+        byr = pp['byr']
+        iyr = pp['iyr']
+        eyr = pp['eyr']
         hgt = pp['hgt']
         hcl = pp['hcl']
         ecl = pp['ecl']
         pid = pp['pid']
           
         all_necessary_attributes = {
-            # Decimal years (ie. 1982.5) are not allowed
-            'byr': (byr == int(byr)) & (1919 < byr < 2003),
-            'iyr': (iyr == int(iyr)) & (2009 < iyr < 2021),
-            'eyr': (eyr == int(eyr)) & (2019 < eyr < 2031),
+            'byr': check_yr(byr, 1920, 2002), 
+            'iyr': check_yr(iyr, 2010, 2020),
+            'eyr': check_yr(eyr, 2020, 2030), 
             'hgt': check_height(hgt),
-            'hcl': bool(re.search(r'^#(?:[0-9a-f]{3}){1,2}$', hcl)),
-            'ecl': ecl in ('amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'),
-            'pid': bool(re.search(r'^\s*(?:[0-9]{9})\s*$', pid)),        
+            'hcl': check_hcl(hcl),
+            'ecl': check_ecl(ecl),
+            'pid': check_pid(pid),        
         }
         return True if sum(all_necessary_attributes.values()) == 7 else False
     except KeyError:
+        # silence predictable errors
         return False
     except Exception as e:
-        print(e)
-        return False
+        raise e
+    
+    
+def check_yr(yr, low, high):
+    """Verify yr is 4 digits and inside acceptable range.
+    Decimal years (ie. 1982.5) are not allowed and will return False
+    """
+    yr = float(yr)
+    return (yr == int(yr)) & (low <= yr <= high)
     
 
 def check_height(hgt):
@@ -71,26 +79,38 @@ def check_height(hgt):
     return False
 
 
-# def validate_keys(parsed_pp):
-#     """DEPRECIATED
-#     Ensure 7 essential keys are in a passport.
-#     'ecl', 'pid', 'eyr', 'hcl', 'byr', 'iyr', 'hgt'
-#     """
-#     status = False
-#     necessary_keys = set(['ecl', 'pid', 'eyr', 'hcl', 'byr', 'iyr', 'hgt'])
-#     current_keys = set(parsed_pp.keys())
-#     current_keys.discard('cid')
-#     return current_keys == necessary_keys
+def check_hcl(hcl):
+    return bool(re.search(r'^#(?:[0-9a-f]{3}){1,2}$', hcl))
 
 
-def count_valid_from_batch(passports):
-    return sum(validate_one(pp) for pp in parse_multiple(passports))
+def check_ecl(ecl):
+    return ecl in ('amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth')
 
 
-assert count_valid_from_batch(sample) == 2, f'sample failed: 2 vs {count_valid_from_batch(sample)}'
-assert count_valid_from_batch(invalid) == 0, 'invalid failed'
-assert count_valid_from_batch(valid) == 4, f'valid failed: 4 vs {count_valid_from_batch(valid)}'
+def check_pid(pid):
+    return bool(re.search(r'^\s*(?:[0-9]{9})\s*$', pid))
+
+
+def validate_keys(parsed_pp):
+    """Ensure 7 essential keys are in a passport.
+    'ecl', 'pid', 'eyr', 'hcl', 'byr', 'iyr', 'hgt'
+    """
+    necessary_keys = set(['ecl', 'pid', 'eyr', 'hcl', 'byr', 'iyr', 'hgt'])
+    current_keys = set(parsed_pp.keys())
+    current_keys.discard('cid')
+    return current_keys == necessary_keys
+
+
+def count_valid_from_batch(passports, validate_func):
+    return sum(validate_func(pp) for pp in parse_multiple(passports))
+
+
+assert count_valid_from_batch(sample, validate_keys) == 2, f'sample failed: 2 vs {count_valid_from_batch(sample)}'
+assert count_valid_from_batch(sample, validate_one) == 2, f'sample failed: 2 vs {count_valid_from_batch(sample)}'
+assert count_valid_from_batch(invalid, validate_one) == 0, 'invalid failed'
+assert count_valid_from_batch(valid, validate_one) == 4, f'valid failed: 4 vs {count_valid_from_batch(valid)}'
 
 
 if __name__ == "__main__":
-    print(count_valid_from_batch(batched_passports))
+    print(count_valid_from_batch(batched_passports, validate_keys))
+    print(count_valid_from_batch(batched_passports, validate_one))
