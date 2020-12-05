@@ -12,11 +12,10 @@ tests = {
 def bisect_values(boarding_pass, lo=0, hi=127, stashed_row=None):
     """Recursively bisect rows & columns until each is isolated to a single value."""
     # Exit Strategy
-    if lo == hi: 
-        if not boarding_pass:
-            return 8 * stashed_row + lo
-        if stashed_row is None:
-            return bisect_values(boarding_pass, 0, 7, stashed_row=lo)
+    if lo == hi and not boarding_pass:  # final seat_id
+        return 8 * stashed_row + lo
+    if lo == hi and stashed_row is None:  # transition from row -> col
+        return bisect_values(boarding_pass, 0, 7, stashed_row=lo)
     
     # Recursion Logic
     pointer = boarding_pass[0]
@@ -26,7 +25,7 @@ def bisect_values(boarding_pass, lo=0, hi=127, stashed_row=None):
         return bisect_values(boarding_pass[1:], lo, midpt, stashed_row)
     if pointer in "BR":
         return bisect_values(boarding_pass[1:], midpt+1, hi, stashed_row)
-    raise ValueError("shouldn't ever get here")    
+    raise ValueError("Shouldn't ever get here, no seat found.")    
     
 
 for bp, seat_id in tests.items():
