@@ -19,7 +19,7 @@ def bisect_rows(boarding_pass, lo=0, hi=127, stashed_row=None):
     
     # Recursion Logic
     pointer = boarding_pass[0]
-    midpt = lo + (hi - lo) // 2
+    midpt = (lo + hi) // 2
     
     if pointer in "FL":
         return bisect_rows(boarding_pass[1:], lo, midpt, stashed_row)
@@ -36,15 +36,10 @@ print("All tests passed.")
 
 if __name__ == "__main__":
     
-    all_seat_ids = set()
+    all_seat_ids = set(bisect_rows(bp) for bp in all_bps.split("\n"))
+
+    biggest = max(all_seat_ids)    
+    empty_seats = set(range(min(all_seat_ids), biggest)) - all_seat_ids
     
-    for bp in all_bps.split("\n"):
-        all_seat_ids.add(bisect_rows(bp))
-    
-    biggest = max(all_seat_ids)
-    print(biggest)
-    
-    missing = set(range(biggest)) - all_seat_ids
-    my_seat = [x for x in missing if (x+1 in all_seat_ids) & (x-1 in all_seat_ids)]
-    print(my_seat)
+    print(f"Biggest: {biggest}\nMy Seat: {empty_seats.pop()}")
     
