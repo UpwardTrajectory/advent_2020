@@ -18,20 +18,15 @@ a
 b"""
 
 
-def count_any_yes(blob):
-    parsed_qs = [x.replace("\n", "") for x in blob.split("\n\n")]
-    return sum([len(set(grp)) for grp in parsed_qs])
-
-
-def count_all_yes(blob):
+def count_answers(blob, func=set.union):
     parsed_qs = [[set(p) for p in grp.split("\n")] for grp in blob.split("\n\n")]
-    return sum([len(set.intersection(*grp)) for grp in parsed_qs])
-    
+    return sum([len(func(*grp)) for grp in parsed_qs])
 
-assert count_any_yes(tests) == 11
-assert count_all_yes(tests) == 6
+
+assert count_answers(tests, set.union) == 11
+assert count_answers(tests, set.intersection) == 6
 
 
 if __name__ == "__main__":
-    print(count_any_yes(all_answers))
-    print(count_all_yes(all_answers))
+    print(count_answers(all_answers, set.union))
+    print(count_answers(all_answers, set.intersection))
