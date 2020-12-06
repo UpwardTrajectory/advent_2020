@@ -1,21 +1,4 @@
-from questions import all_answers
-
-
-tests = """abc
-
-a
-b
-c
-
-ab
-ac
-
-a
-a
-a
-a
-
-b"""
+from questions import tests, all_answers
 
 
 def count_answers(blob, func=set.union):
