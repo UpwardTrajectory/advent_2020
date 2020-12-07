@@ -1,4 +1,3 @@
-import re
 from math import prod
 import networkx as nx
 from bag_rules import sample, sample_2, nested_sample, rules
@@ -8,19 +7,14 @@ def parse_row(row):
     """For a single rule (row), create acceptable input for nx.build_edges_from()"""
     parent, children = row.split(" bags contain ")
     parsed_children = []
-    if children == "no other bags.":
-        pass
-    else:
+    if children != "no other bags.":
         children = children.replace("bags", "").split(", ")
         for child in children:     
             num, adj, color = child.split(" ")[:3]
             name = adj + " " + color
             parsed_children.append((parent, name, {'max_count': int(num)}))
-
-    result = {parent: parsed_children}
+    return {parent: parsed_children}
    
-    return result
-
 
 def parse_all(text_blob):
     """Iterate over all given rules (text_blob) and build nodes & edges 
