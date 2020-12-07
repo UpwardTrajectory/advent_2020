@@ -44,8 +44,10 @@ def build_graph(nodes, edges):
 
 
 def count_total_bags_contained_in(bag, G):
-    sink_nodes = [node for node, outdegree in G.out_degree(G.nodes()) if outdegree == 0]
-    all_paths = [p for sink in sink_nodes for p in nx.all_simple_paths(G, source=bag, target=sink)]
+    sink_nodes = [node for node, n_out in G.out_degree(G.nodes()) if n_out == 0]
+    all_paths = [p for sink in sink_nodes 
+                   for p in nx.all_simple_paths(G, source=bag, target=sink)
+                ]
     total = 0
     already_seen = set()
     for path in all_paths:
@@ -53,7 +55,10 @@ def count_total_bags_contained_in(bag, G):
             partial_path = tuple(path[:path.index(child)+1])
             
             if partial_path not in already_seen:
-                multipliers = [G.get_edge_data(par, ch)['max_count'] for par, ch in zip(partial_path[:-1], partial_path[1:])]
+                par_chld_pairs = zip(partial_path[:-1], partial_path[1:])
+                multipliers = [
+                    G.get_edge_data(par, ch)['max_count'] for par, ch in par_chld_pairs
+                ]
                 total += prod(multipliers)
                 already_seen.add(partial_path)       
     return total
@@ -65,12 +70,18 @@ tests = {'4': sample, 32: sample, 126: sample_2, 35653: nested_sample}
 
 for i, (ans, text_blob) in enumerate(tests.items()):
     G = build_graph(*parse_all(text_blob))   
-    if isinstance(ans, str):  # Part 1 : How many ultimate parent bags evenutally can hold 'shiny gold'?
+    # Part 1 : How many ultimate parent bags evenutally can hold 'shiny gold'?
+    if isinstance(ans, str):  
         pred = len(nx.algorithms.ancestors(G, 'shiny gold'))
-        assert pred == int(ans), f"Test #0 Failed\n\t\tTrue =>  {ans} != {pred}  <= Predicted"
-    else: # Part 2: How many total bags can a 'shiny gold' bag hold (with all filled to capacity)?
+        assert pred == int(ans), (
+            f"Test #0 Failed\n\t\tTrue =>  {ans} != {pred}  <= Predicted"
+        )
+    # Part 2: How many bags can a 'shiny gold' bag hold (with all filled to capacity)?
+    else: 
         pred = count_total_bags_contained_in('shiny gold', G)
-        assert pred == ans, f"#{i} Failed\n\t\tTrue =>  {ans} != {pred}  <= Predicted"
+        assert pred == ans, (
+            f"#{i} Failed\n\t\tTrue =>  {ans} != {pred}  <= Predicted"
+        )
         
     
 if __name__ == "__main__":
