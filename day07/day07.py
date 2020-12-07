@@ -58,22 +58,20 @@ def count_total_bags_contained_in(bag, G):
                 already_seen.add(partial_path)       
     return total
         
+    
+# { answer : text_blob}  for P1: key is str(answer)  for P2 it is just a nomral number
+# WARNING: Cannot have multiple different text_blobs w/ the same numerical answer
+tests = {'4': sample, 32: sample, 126: sample_2, 35653: nested_sample}
 
-G1 = build_graph(*parse_all(sample))
-G2 = build_graph(*parse_all(sample_2))
-G3 = build_graph(*parse_all(nested_sample))
-
-assert len(nx.algorithms.ancestors(G1, 'shiny gold')) == 4
-
-pred = count_total_bags_contained_in('shiny gold', G1)
-assert pred == 32, f"{pred} != 32"
-
-pred = count_total_bags_contained_in('shiny gold', G2)
-assert pred == 126, f"{pred} != 126"
-
-pred = count_total_bags_contained_in('shiny gold', G3)
-assert pred == 35653, f"{pred} != 35653"
-                
+for i, (ans, text_blob) in enumerate(tests.items()):
+    G = build_graph(*parse_all(text_blob))   
+    if isinstance(ans, str):  # Part 1 : How many ultimate parent bags evenutally can hold 'shiny gold'?
+        pred = len(nx.algorithms.ancestors(G, 'shiny gold'))
+        assert pred == int(ans), f"Test #0 Failed\n\t\tTrue =>  {ans} != {pred}  <= Predicted"
+    else: # Part 2: How many total bags can a 'shiny gold' bag hold (with all filled to capacity)?
+        pred = count_total_bags_contained_in('shiny gold', G)
+        assert pred == ans, f"#{i} Failed\n\t\tTrue =>  {ans} != {pred}  <= Predicted"
+        
     
 if __name__ == "__main__":
     G = build_graph(*parse_all(rules))
