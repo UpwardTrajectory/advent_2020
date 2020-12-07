@@ -57,15 +57,13 @@ def count_total_bags_contained_in(bag, G):
     for path in all_paths:
         for parent, child in zip(path[:-1], path[1:]):
             partial_path = tuple(path[:path.index(child)+1])
-            multipliers = [G.get_edge_data(par, ch)['max_count'] for par, ch in zip(partial_path[:-1], partial_path[1:])]
- 
-            if partial_path not in already_seen:
-                total += prod(multipliers)
-                already_seen.add(partial_path)
             
+            if partial_path not in already_seen:
+                multipliers = [G.get_edge_data(par, ch)['max_count'] for par, ch in zip(partial_path[:-1], partial_path[1:])]
+                total += prod(multipliers)
+                already_seen.add(partial_path)       
     return total
         
-    
 
 G1 = build_graph(*parse_all(sample))
 G2 = build_graph(*parse_all(sample_2))
