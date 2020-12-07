@@ -9,6 +9,24 @@ faded blue bags contain no other bags.
 dotted black bags contain no other bags."""
 
 
+sample_2 = """shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags."""
+
+# P2 maybe? equals 35653 ?
+nested_sample = """shiny gold bags contain 8 dark red bags, 5 light blue bags.
+dark red bags contain 20 striped black bags, 15 spotted yellow bags.
+light blue bags contain 10 spotted yellow bags, 30 striped black bags.
+striped black bags contain 50 ending brown bags, 2 ending maroon bags.
+spotted yellow bags contain 100 ending maroon bags, 12 ending brown bags.
+ending brown bags contain no other bags.
+ending maroon bags contain no other bags."""
+
+
 rules = """striped green bags contain 5 posh indigo bags.
 light yellow bags contain 3 wavy turquoise bags.
 bright lime bags contain 2 striped crimson bags, 3 dull red bags.
