@@ -25,20 +25,17 @@ def parse_all(text_blob):
     parsed_rules = {}
     for row in text_blob.split("\n"):
         parsed_rules.update(parse_row(row))
-    nodes = set(parsed_rules)
     edges = []
     for grp in parsed_rules.values():
         edges += grp
-    
-    return nodes, edges
+    return edges
 
 
-def build_graph(nodes, edges):
+def build_graph(edges):
     """Create a directed graph between all bag colors
     also contains 'max_count' data
     """
     G = nx.DiGraph()
-    G.add_nodes_from(nodes)
     G.add_edges_from(edges)
     return G    
 
@@ -69,7 +66,7 @@ def count_total_bags_contained_in(bag, G):
 tests = {'4': sample, 32: sample, 126: sample_2, 35653: nested_sample}
 
 for i, (ans, text_blob) in enumerate(tests.items()):
-    G = build_graph(*parse_all(text_blob))   
+    G = build_graph(parse_all(text_blob))   
     # Part 1 : How many ultimate parent bags evenutally can hold 'shiny gold'?
     if isinstance(ans, str):  
         pred = len(nx.algorithms.ancestors(G, 'shiny gold'))
@@ -85,7 +82,7 @@ for i, (ans, text_blob) in enumerate(tests.items()):
         
     
 if __name__ == "__main__":
-    G = build_graph(*parse_all(rules))
+    G = build_graph(parse_all(rules))
     # Part 1
     print(len(nx.algorithms.ancestors(G, 'shiny gold')))
     # Part 2
