@@ -56,8 +56,7 @@ def find_repeated_line(get_code_from_idx):
 def process_line(pointer, single_code, all_opps=ALL_OPPS):
     """Process a single line of code, return updated 'pointer'"""
     opp, num = single_code
-    #print(all_opps[opp])
-    all_opps[opp](*(num, pointer))
+    all_opps[opp](num, pointer)
     return pointer
 
 
