@@ -28,7 +28,7 @@ def find_rolling_sum(data, target):
     for a, b in poss_sum_pairs:
         if b - a == target:
             min_idx = all_sums.index(a) + 1
-            max_idx = all_sums.index(b)
+            max_idx = all_sums.index(b) + 1
             window = data[min_idx: max_idx]
             return min(window) + max(window)
     return None
@@ -37,7 +37,7 @@ def find_rolling_sum(data, target):
 data = parse_raw(sample)
 pred = find_weakness(data, 5)
 assert pred == 127
-
+assert find_rolling_sum(data, pred) == 62
 
 if __name__ == "__main__":
     data = parse_raw(full_input)
