@@ -1,6 +1,5 @@
 import numpy as np
-from chairs import sample, waiting_area
-#from rolling_window import rolling_window
+from chairs import sample, waiting_area, test_strings
 
 
 def map_area(data):
@@ -8,14 +7,21 @@ def map_area(data):
 
 
 def analyze_chairs(m):
-    going_to_sit_rows = []
-    going_to_sit_cols = []
-    going_to_leave_rows = []
-    going_to_leave_cols = []
+    """Iterate through the room & build two lists of indicis.
+    Use a rolling window to search for empty chairs w/ no-one seated
+     -- add to 'going_to_sit'
+    Simultainesouly look for filled chairs that ALSO have 4+ neighbors
+     -- add to 'going_to_leave'
+    
+    return (arrive_rows, arrive_cols), (leave_rows, leave_cols)
+    which can be used later to slice into 'm'
+    """
+    arrive_rows, arrive_cols = [], []
+    leave_rows, leave_cols = [], []
+    col_dim, row_dim = m.shape
     
     for row, one_row in enumerate(m):
-        for col, val in enumerate(one_row):
-            col_dim, row_dim = m.shape
+        for col, val in enumerate(one_row): 
             r_min = max(0, row-1)
             r_max = min(row_dim, row+2)
             c_min = max(0, col-1)
@@ -23,24 +29,24 @@ def analyze_chairs(m):
             rolling_window = m[r_min: r_max, c_min: c_max]
             # Will someone sit down?
             if (val == 0) and (np.nansum(rolling_window) == 0):
-                going_to_sit_rows.append(row)
-                going_to_sit_cols.append(col)
+                arrive_rows.append(row)
+                arrive_cols.append(col)
             # Will this chair vacate?
             if (val == 1) and (np.nansum(rolling_window) >= 5):
-                going_to_leave_rows.append(row)
-                going_to_leave_cols.append(col)
+                leave_rows.append(row)
+                leave_cols.append(col)
     
-    return (going_to_sit_rows, going_to_sit_cols), (going_to_leave_rows, going_to_leave_cols)
+    return (arrive_rows, arrive_cols), (leave_rows, leave_cols)
 
 
 def cycle_once(m):
     going_to_sit, going_to_leave = analyze_chairs(m)
     
-    print(f"Num sitting  {len(going_to_sit[0])} | {len(going_to_leave[0])}  Num leaving")
-#     show_room(m)  # this will print()
+    print(f"Arrived  {len(going_to_sit[0])} | {len(going_to_leave[0])}  Left  |  Current: {int(np.nansum(m))}")
     
     if going_to_sit == going_to_leave:
         print("No changes!  Exiting . . . ")
+        print(going_to_sit, going_to_leave)
         return (m, False)
     
     m[going_to_sit] = 1
@@ -65,15 +71,15 @@ def show_room(m):
     z = np.vectorize({"None": ".", "L": "L", "#":'#'}.get)(z)
     z_printout = "\n".join("".join(row) for row in z) + "\n"
     print(z_printout)
-    return
+    return z_printout[:-1]
     
     
 assert stabalize_room(sample) == 37
 
-
+    
 if __name__ == "__main__":
     print(stabalize_room(waiting_area))
     
     
     # Part One bounds: 
-    bounds = (-1, 2390)
+    too_high = [2390, 2387]
