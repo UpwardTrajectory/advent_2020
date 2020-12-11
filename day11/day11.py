@@ -1,5 +1,5 @@
 import numpy as np
-from chairs import sample, waiting_area, test_strings
+from chairs import sample, waiting_area
 
 
 def map_area(data):
@@ -7,8 +7,8 @@ def map_area(data):
 
 
 def analyze_chairs(m):
-    """Iterate through the room & build two lists of indicis.
-    Use a rolling window to search for empty chairs w/ no-one seated
+    """Iterate through the room & build two lists of indices.
+    Use a rolling window to search for empty chairs w/ no-one seated nearby
      -- add to 'going_to_sit'
     Simultainesouly look for filled chairs that ALSO have 4+ neighbors
      -- add to 'going_to_leave'
@@ -31,7 +31,7 @@ def analyze_chairs(m):
             if (val == 0) and (np.nansum(rolling_window) == 0):
                 arrive_rows.append(row)
                 arrive_cols.append(col)
-            # Will this chair vacate?
+            # Will this chair vacate?  (cutoff @ 5 because of counting self)
             if (val == 1) and (np.nansum(rolling_window) >= 5):
                 leave_rows.append(row)
                 leave_cols.append(col)
@@ -40,13 +40,15 @@ def analyze_chairs(m):
 
 
 def cycle_once(m):
+    """Analyze a seating map (m) and change it in place.
+    Return the updated map, and a flag for whether the room is still unstable
+    """
     going_to_sit, going_to_leave = analyze_chairs(m)
     
-    print(f"Arrived  {len(going_to_sit[0])} | {len(going_to_leave[0])}  Left  |  Current: {int(np.nansum(m))}")
+    print(f"Arrived  {len(going_to_sit[0])} | {len(going_to_leave[0])}  Left  |  Current  {int(np.nansum(m))}")
     
     if going_to_sit == going_to_leave:
         print("No changes!  Exiting . . . ")
-        print(going_to_sit, going_to_leave)
         return (m, False)
     
     m[going_to_sit] = 1
@@ -56,6 +58,12 @@ def cycle_once(m):
    
     
 def stabalize_room(data):
+    """Parse the raw data, then alternate between filling & vacating
+    chairs in the waiting room.
+    
+    When no more changes can occur, exit the cycle & return the total 
+    number of seated visitors.
+    """
     m, still_in_flux = map_area(data), True
     
     while still_in_flux:
@@ -69,9 +77,9 @@ def show_room(m):
     view_map = {0: "L", 1:'#'}
     z = np.vectorize(view_map.get)(m)
     z = np.vectorize({"None": ".", "L": "L", "#":'#'}.get)(z)
-    z_printout = "\n".join("".join(row) for row in z) + "\n"
-    print(z_printout)
-    return z_printout[:-1]
+    z_printout = "\n".join("".join(row) for row in z)
+    print(z_printout, "\n")
+    return z_printout
     
     
 assert stabalize_room(sample) == 37
