@@ -46,16 +46,20 @@ def find_entropy_zones(G):
     zones_of_chaos = []
 
     for node in nodes:
-        n_in = sum(1 for _ in G.predecessors(node))
-        n_out = sum(1 for _ in G.successors(node))
+        
+        able_to_leave_chaos = (
+            prev_n_out == 1
+            and G.in_degree(node) == 1 
+            and open_gate_to_chaos != prev_node  # Skip single-paths
+        )
 
-        if (prev_n_out == 1) and (n_in == 1):
+        if able_to_leave_chaos:
             zones_of_chaos.append((open_gate_to_chaos, prev_node))
             open_gate_to_chaos = node
 
-        prev_node, prev_n_out = node, n_out
+        prev_node, prev_n_out = node, G.out_degree(node)
 
-    return [tuple(x) for x in zones_of_chaos if x[0] != x[1]]
+    return set(zones_of_chaos)
 
     
 def count_paths(data):
