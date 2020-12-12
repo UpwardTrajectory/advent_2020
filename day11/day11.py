@@ -27,6 +27,7 @@ def analyze_chairs(m):
             c_min = max(0, col-1)
             c_max = min(col_dim, col+2)
             rolling_window = m[r_min: r_max, c_min: c_max]
+            print(rolling_window.shape)
             # Will someone sit down?
             if (val == 0) and (np.nansum(rolling_window) == 0):
                 arrive_rows.append(row)
@@ -49,12 +50,12 @@ def cycle_once(m):
     
     if going_to_sit == going_to_leave:
         print("No changes!  Exiting . . . ")
-        return (m, False)
+        return m, False
     
     m[going_to_sit] = 1
     m[going_to_leave] = 0   
         
-    return (m, True)
+    return m, True
    
     
 def stabalize_room(data):
@@ -65,6 +66,7 @@ def stabalize_room(data):
     number of seated visitors.
     """
     m, still_in_flux = map_area(data), True
+    print(m)
     
     while still_in_flux:
         m, still_in_flux = cycle_once(m)
@@ -73,16 +75,73 @@ def stabalize_room(data):
         
 
 def show_room(m):
-    """Helper function to visualize using original view"""
-    view_map = {0: "L", 1:'#'}
+    """NOT USED: Helper function to visualize using original characters"""
+    view_map = {np.nan: ".", 0: "L", 1:'#'}
     z = np.vectorize(view_map.get)(m)
     z = np.vectorize({"None": ".", "L": "L", "#":'#'}.get)(z)
     z_printout = "\n".join("".join(row) for row in z)
     print(z_printout, "\n")
     return z_printout
     
-    
+
+print(sample)
 assert stabalize_room(sample) == 37
+
+###   DEBUGGING MODE
+# To do:  Step through my version & his version one at a time & find where they depart.
+
+from __future__ import annotations
+from typing import List
+from collections import Counter
+from chairs import waiting_area
+
+
+Grid = List[List[str]]
+
+neighbors = [(-1, 0), (-1, -1), (-1, +1), 
+             ( 0,-1),           ( 0, +1),
+             ( 1, 1), (1,  0),  (1, - 1)]
+
+def next_value(grid: Grid, i: int, j: int) -> str:
+    nr = len(grid)
+    nc = len(grid[0])
+
+    counts = Counter(
+        grid[i + di][j + dj]
+        for di, dj in neighbors
+        if 0 <= i + di < nr and 0 <= j + dj < nc
+    )
+
+    c = grid[i][j]    
+
+    if c == 'L' and counts['#'] == 0:
+        return '#'
+    if c == '#' and counts['#'] >= 4:
+        return 'L'
+    else:
+        return c
+
+def step(grid: Grid) -> Grid:
+    return [
+        [
+            next_value(grid, i, j)
+            for j, c in enumerate(row)
+        ]
+        for i, row in enumerate(grid)
+    ]
+
+
+def final_seats(grid: Grid) -> int:
+    while True:
+        next_grid = step(grid)
+        if next_grid == grid:
+            break
+        grid = next_grid
+
+    return sum(c == '#' for row in grid for c in row)
+
+####
+
 
     
 if __name__ == "__main__":
