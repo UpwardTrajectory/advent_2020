@@ -110,6 +110,7 @@ class Boat(NamedTuple):
     
     @property
     def dwp(self):
+        """Helper function to display offset of the waypoint instead of its exact position"""
         return self.waypoint.x - self.status.x, self.waypoint.y - self.status.y
                   
         
