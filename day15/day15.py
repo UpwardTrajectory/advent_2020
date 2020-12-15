@@ -30,20 +30,20 @@ ELVES_HAVE_SPOKEN = "11,0,1,10,5,19"
 #     return nums
 
 
-def speak_next(most_recent, turn_num, nums: dict):
+def speak_next(most_recent, turn_num, nums_spoken: dict):
     """
     If you want to optimize something in Python, 
     it probably involves dictionaries or tuples.
                      ~ My friend Miles
     """
-    if most_recent not in nums:
+    if most_recent not in nums_spoken:
         saying = 0
     else:
-        saying = turn_num - nums[most_recent]
+        saying = turn_num - nums_spoken[most_recent]
 
-    nums[most_recent] = turn_num
+    nums_spoken[most_recent] = turn_num
     turn_num += 1
-    return saying, turn_num, nums
+    return saying, turn_num, nums_spoken
     
 
 def play_game(data: str, max_n: int=2020, shout=False) -> int:
@@ -55,10 +55,10 @@ def play_game(data: str, max_n: int=2020, shout=False) -> int:
 
     saying = starting_nums[-1]
     turn_num = len(starting_nums)
-    nums = {int(x): i+1 for i, x in enumerate(starting_nums[:-1])}
+    nums_spoken = {int(x): i+1 for i, x in enumerate(starting_nums[:-1])}
    
     for n in range(max_n - len(starting_nums)):
-        saying, turn_num, nums = speak_next(saying, turn_num, nums)
+        saying, turn_num, nums_spoken = speak_next(saying, turn_num, nums_spoken)
     
     return saying
     
