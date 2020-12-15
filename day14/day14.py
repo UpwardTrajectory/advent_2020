@@ -49,7 +49,7 @@ def float_through(num36: str, mask: str, mem: dict):
     return mem
         
     
-def fix_group(mask: str, nums: List, method='mask'):
+def fix_group(mask: str, nums: List, method: str='mask'):
     result = {}
     if  method in ['mask', 'v1', 1]:
         for address, val in nums:
@@ -60,7 +60,7 @@ def fix_group(mask: str, nums: List, method='mask'):
     return result
 
 
-def hack_the_mainframe(raw_data, method='mask'):
+def hack_the_mainframe(raw_data: str, method: str='mask'):
     ops = parse_codes(raw_data)
     
     memory = {}
@@ -72,8 +72,10 @@ def hack_the_mainframe(raw_data, method='mask'):
     
 c = hack_the_mainframe(sample)
 assert c == 165
-c = hack_the_mainframe(sample, float_through)
+c = hack_the_mainframe(sample, method='quantum')
 
 
 if __name__ == "__main__":
     print(hack_the_mainframe(bootcode))
+    
+    print(hack_the_mainframe(bootcode, method='quantum'))
