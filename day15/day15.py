@@ -30,7 +30,7 @@ ELVES_HAVE_SPOKEN = "11,0,1,10,5,19"
 #     return nums
 
 
-def speak_next(most_recent, turn_num, nums_spoken: dict):
+def speak_next(most_recent: int, turn_num: int, nums_spoken: dict):
     """
     If you want to optimize something in Python, 
     it probably involves dictionaries or tuples.
@@ -49,7 +49,7 @@ def speak_next(most_recent, turn_num, nums_spoken: dict):
 def play_game(data: str, max_n: int=2020, shout=False) -> int:
     """Play a game according to: https://adventofcode.com/2020/day/15
     Initializes by building a dict until the 2nd to last turn of inputs
-    then starts the loop by 'saying' the very last word from the inputs.
+    then starts the loop by 'saying' the final number from the inputs.
     """
     starting_nums = [int(x) for x in data.split(",")]
 
@@ -69,4 +69,10 @@ assert play_game(SAMPLE) == 436
 if __name__ == "__main__":
     print(play_game(ELVES_HAVE_SPOKEN))
     
+    import time
+    t = time.time()
+    
     print(play_game(ELVES_HAVE_SPOKEN, 30000000))
+    
+    elapsed = round(time.time() - t, 3)
+    print(f"\nPart 2 took: {elapsed} seconds.")

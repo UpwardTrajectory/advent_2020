@@ -46,6 +46,20 @@ def cover_up(num36: str, mask: str):
 
 def float_through(num36: str, mask: str, mem: dict):
     """Used in part 2"""
+    ones = [m.start() for m in re.finditer('1', mask)]
+    quantums = [m.start() for m in re.finditer('X', mask)]
+    
+    fixed = ""
+    for i, digit in enumerate(num36):
+        if i in ones:
+            c = "1"
+        elif i in quantums:
+            c = "X"
+        else:
+            c = digit
+        fixed += c
+    
+    
     return mem
         
     
