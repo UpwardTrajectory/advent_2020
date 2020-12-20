@@ -64,15 +64,14 @@ def advanced_math_sans_parens(s):
     
     if '+' in s:
         add_loc = s.index("+")
-        prelude = max(0, add_loc-1)
-        finale = min(len(s), add_loc+2)
-        s = s[:prelude] + [s[add_loc-1] + s[add_loc+1]] + s[finale:]
+        prelude = s[: max(0, add_loc-1)]
+        new_sum = s[add_loc-1] + s[add_loc+1]
+        s = prelude + [new_sum] + s[add_loc+2:]
         return advanced_math_sans_parens(s)
     
     s = [c for c in s if c not in {"*", ")"}]
     return math.prod(s)
     
-        
 
 def compute_all(problems, func=sans_parens):
     """Evaluate all math problems, using the 'Order of Operations' defined in func."""
