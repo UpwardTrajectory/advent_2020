@@ -1,8 +1,5 @@
 from math import prod
-from typing import NamedTuple
-from dataclasses import dataclass
 import re
-import networkx as nx
 from tiles import sample, tiles_and_ids
 
 
