@@ -24,11 +24,9 @@ class Deck(dict):
     def top(self):
         return self.cards[0]
     
-    def starts_recursion(self, other):
-        matched_card_count = self.top <= len(self.cards[1:])
-        other_card_count = other.top <= len(other.cards[1:])
-        other_has_enough = self.top <= len(other.cards)
-        if matched_card_count and other_card_count and other_has_enough:
+    @property
+    def starts_recursion(self):
+        if self.top <= len(self.cards[1:])
             return True
         return False
         
@@ -114,14 +112,14 @@ class RecursiveCombat(dict):
             game_state = tuple([tuple(p1.cards), tuple(p2.cards)])
             
             if (game_state in self.deck_histories) and not just_exited_recursion:
-                print(f"{meta_lvl}Infinite Loop Avoided on round {i} -- Forced Exit with Victory to {self.p1.name}.")
+#                 print(f"{meta_lvl}Infinite Loop Avoided on round {i} -- Forced Exit with Victory to {self.p1.name}.")
                 if meta_lvl == "|":
                     print(f"Outermost Game found revisited state on round {i}. {p1.name} wins.")
                 return p1
             else:
                 self.deck_histories.add(game_state)
             
-            if p1.starts_recursion(p2):# or p2.starts_recursion(p1):
+            if p1.starts_recursion and p2.starts_recursion:
                 cached_meta_lvl = meta_lvl
                 meta_lvl += "_"             
                 parents = {"p1": p1, "p2": p2}
@@ -129,7 +127,6 @@ class RecursiveCombat(dict):
                 meta_winner = nested_game.play_game()
 #                 print(f"Starting recursive game on round {i}")
 #                 print(f"{i}: Parents: {p1.name}, {p2.name}  --  Children:  {meta_p1.name}, {meta_p2.name}")
-#                 meta_winner = self.play_game(p1=meta_p1, p2=meta_p2, meta_lvl=meta_lvl)
                 parents = self.resolve_meta_winner(meta_winner, parents)
                 p1 = parents['p1']
                 p2 = parents['p2']
@@ -179,6 +176,7 @@ rec_game = RecursiveCombat.build(sample)
 winner = rec_game.play_game()
 assert winner.score == 291
 
+
 if __name__ == "__main__":
     winning_score = play_game(starting_decks)
     print(winning_score)
@@ -186,5 +184,3 @@ if __name__ == "__main__":
     rec_game = RecursiveCombat.build(starting_decks)
     winner = rec_game.play_game()
     print(winner.score)
-
-    # P2 bounds:  (0, 34678)
