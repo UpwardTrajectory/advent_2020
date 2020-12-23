@@ -26,7 +26,7 @@ class Deck(dict):
     
     @property
     def starts_recursion(self):
-        if self.top <= len(self.cards[1:])
+        if self.top <= len(self.cards[1:]):
             return True
         return False
         
